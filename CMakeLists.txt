@@ -13,16 +13,29 @@ find_package(cv_bridge REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(OpenCV REQUIRED)
+find_package(nav2_msgs REQUIRED)
+find_package(nav2_util REQUIRED)
 
 ament_python_install_package(${PROJECT_NAME})
 
 #Build
-add_executable(lanefollowing src/lanefollowing.cpp)
-target_include_directories(lanefollowing PUBLIC ${CMAKE_SOURCE_DIR}/include/${PROJECT_NAME})
-ament_target_dependencies(lanefollowing rclcpp cv_bridge sensor_msgs geometry_msgs OpenCV)
+# add_executable(lanefollowing src/lanefollowing.cpp)
+# target_include_directories(lanefollowing PUBLIC ${CMAKE_SOURCE_DIR}/include/${PROJECT_NAME})
+# ament_target_dependencies(lanefollowing rclcpp cv_bridge sensor_msgs geometry_msgs OpenCV)
 
 add_executable(detector src/detector.cpp)
 ament_target_dependencies(detector rclcpp sensor_msgs cv_bridge OpenCV)
+
+add_executable(initpoint src/initpoint.cpp)
+ament_target_dependencies(initpoint rclcpp sensor_msgs cv_bridge OpenCV)
+
+add_executable(final src/final.cpp)
+ament_target_dependencies(final rclcpp sensor_msgs geometry_msgs cv_bridge OpenCV)
+
+add_executable(avoid src/avoid.cpp)
+ament_target_dependencies(avoid rclcpp sensor_msgs geometry_msgs nav2_msgs nav2_util cv_bridge OpenCV)
+
+
 
 install(
   DIRECTORY 
@@ -32,13 +45,20 @@ install(
 
 install(
   PROGRAMS 
-    src/detectorpy.py
+    src/testpts.py
+    src/robot_navigator.py
+    src/nav2pose.py
+    src/ahead.py
+    src/switch.py
   DESTINATION lib/${PROJECT_NAME}
 )
 
 install(TARGETS
-  lanefollowing
+  # lanefollowing
   detector
+  initpoint
+  final
+  avoid
   DESTINATION lib/${PROJECT_NAME})
 
 if(BUILD_TESTING)
