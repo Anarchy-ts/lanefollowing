@@ -7,7 +7,7 @@
 class PointCloudSubscriber : public rclcpp::Node
 {
 public:
-    PointCloudSubscriber() : Node("pointcloud_subscriber")
+    PointCloudSubscriber() : Node("Avoid")
     {
         subscription_ = this->create_subscription<sensor_msgs::msg::PointCloud2>(
             "/zed2i/zed_node/points",  // Change this to your actual topic name

@@ -30,7 +30,7 @@ private:
             // Convert RGB image to grayscale
             cv::Mat gray_image;
             cv::cvtColor(cv_ptr->image, gray_image, cv::COLOR_RGB2GRAY);
-            cv::inRange(gray_image, cv::Scalar(125), cv::Scalar(135), gray_image);
+            cv::inRange(gray_image, cv::Scalar(120), cv::Scalar(140), gray_image);
             // gray_image = gray_image(cv::Rect(0, gray_image.rows / 3 * 2, gray_image.cols, gray_image.rows/3));
             // Convert OpenCV grayscale image to ROS image message
             sensor_msgs::msg::Image::SharedPtr gray_msg = cv_bridge::CvImage(std_msgs::msg::Header(), "mono8", gray_image).toImageMsg();

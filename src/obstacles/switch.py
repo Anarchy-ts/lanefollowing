@@ -8,7 +8,7 @@ def avoid_callback(msg):
         print("Avoiding obstacle, lane following on hold")
         try:
             # Execute ahead.py using subprocess
-            subprocess.run(['python3', 'src/lanefollowing/src/ahead.py'])
+            subprocess.run(['python3', '/home/tamoghna/ros2_ws/src/lanefollowing/src/ahead.py'])
         except Exception as e:
             print("Error running ahead.py:", e)
         
@@ -18,7 +18,7 @@ def avoid_callback(msg):
 
 def main():
     rclpy.init()
-    node = rclpy.create_node('avoid_listener')
+    node = rclpy.create_node('Switch')
     subscriber = node.create_subscription(Bool, '/lanefollowing/avoid', avoid_callback, 10)
     subscriber  # Prevent unused variable warning
     rclpy.spin(node)

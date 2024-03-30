@@ -2,6 +2,8 @@
 #include "sensor_msgs/msg/image.hpp"
 #include "geometry_msgs/msg/point.hpp"
 #include "bits/stdc++.h"
+#include "opencv2/opencv.hpp"
+#include "cv_bridge/cv_bridge.h"
 
 bool flag1 = false, flag2 = false;
 geometry_msgs::msg::Point left,right;
@@ -23,19 +25,23 @@ private:
     {
         const int height = msg->height;
         const int width = msg->width;
-        const int step = msg->step;
+        // const int step = msg->step;
+        cv_bridge::CvImagePtr cv_ptr = cv_bridge::toCvCopy(msg, sensor_msgs::image_encodings::MONO8);
+        // std::cout<<"height:"<<height<<"and width:"<<width<<"\n";
+        // const uint8_t* data = msg->data.data();
+        cv::Mat cv_image = cv_ptr->image;
+        int intensity;
 
-        const uint8_t* data = msg->data.data();
         if (!flag1 || !flag2)
         {
-            for (int y = height-10; y >= 0; y--) 
+            for (int y = height-150; y >= 0; y--) 
             {
-                for (int x = 0; x < width/2; x++) 
+                for (int x = width/2; x > 20; x--) 
                 {
-                    int index = y * step + x;
+                    // int index = y * step + x;
 
-                    uint8_t intensity = msg->data[index];
-
+                    // uint8_t intensity = msg->data[index];
+                    intensity = cv_image.at<uchar>(y, x);
                     if (intensity == 255) 
                     {
                         geometry_msgs::msg::Point pixel_point;
@@ -50,12 +56,12 @@ private:
                         
                     }
                 }
-                for (int x = width; x >= width/2; x--) 
+                for (int x = width/2; x <= width-20; x++) 
                 {
-                    int index = y * step + x;
+                    // int index = y * step + x;
 
-                    uint8_t intensity = msg->data[index];
-
+                    // uint8_t intensity = msg->data[index];
+                    intensity = cv_image.at<uchar>(y, x);
                     if (intensity == 255) 
                     {
                         geometry_msgs::msg::Point pixel_point;

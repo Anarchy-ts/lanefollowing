@@ -23,16 +23,16 @@ ament_python_install_package(${PROJECT_NAME})
 # target_include_directories(lanefollowing PUBLIC ${CMAKE_SOURCE_DIR}/include/${PROJECT_NAME})
 # ament_target_dependencies(lanefollowing rclcpp cv_bridge sensor_msgs geometry_msgs OpenCV)
 
-add_executable(detector src/detector.cpp)
+add_executable(detector src/lanefollower/detector.cpp)
 ament_target_dependencies(detector rclcpp sensor_msgs cv_bridge OpenCV)
 
-add_executable(initpoint src/initpoint.cpp)
+add_executable(initpoint src/lanefollower/initpoint.cpp)
 ament_target_dependencies(initpoint rclcpp sensor_msgs cv_bridge OpenCV)
 
-add_executable(final src/final.cpp)
+add_executable(final src/lanefollower/final.cpp)
 ament_target_dependencies(final rclcpp sensor_msgs geometry_msgs cv_bridge OpenCV)
 
-add_executable(avoid src/avoid.cpp)
+add_executable(avoid src/obstacles/avoid.cpp)
 ament_target_dependencies(avoid rclcpp sensor_msgs geometry_msgs nav2_msgs nav2_util cv_bridge OpenCV)
 
 
@@ -45,11 +45,12 @@ install(
 
 install(
   PROGRAMS 
-    src/testpts.py
-    src/robot_navigator.py
-    src/nav2pose.py
-    src/ahead.py
-    src/switch.py
+    src/obstacles/testpts.py
+    src/obstacles/robot_navigator.py
+    src/obstacles/nav2pose.py
+    src/obstacles/ahead.py
+    src/obstacles/switch.py
+    src/lanefollower/pixelcoord.py
   DESTINATION lib/${PROJECT_NAME}
 )
 

@@ -15,12 +15,14 @@ class NavigatorDemo:
         self.odom_subscriber = self.navigator.create_subscription(Odometry, '/odom', self.odom_callback, 10)
         self.current_x = None
         self.current_y = None
+        self.ang_z = None
         self.flag = True
 
     def odom_callback(self, msg):
         if self.flag == True:
             self.current_x = msg.pose.pose.position.x
             self.current_y = msg.pose.pose.position.y
+            self.ang_z = msg.pose.pose.orientation.z
             self.flag = False
 
     def run(self):
@@ -32,9 +34,14 @@ class NavigatorDemo:
         goal_pose = PoseStamped()
         goal_pose.header.frame_id = 'odom'
         goal_pose.header.stamp = self.navigator.get_clock().now().to_msg()
-        goal_pose.pose.position.x = self.current_x + 2.0
-        goal_pose.pose.position.y = self.current_y 
-        goal_pose.pose.orientation.w = 1.0
+        if self.ang_z < 0.25 : 
+            goal_pose.pose.position.x = self.current_x + 3.0
+            goal_pose.pose.position.y = self.current_y + 0
+            goal_pose.pose.orientation.w = 1.0
+        else : 
+            goal_pose.pose.position.x = self.current_x + 0
+            goal_pose.pose.position.y = self.current_y + 3.0
+            goal_pose.pose.orientation.w = 1.0
 
         self.navigator.goToPose(goal_pose)
 

@@ -18,8 +18,8 @@ private:
     rclcpp::Subscription<geometry_msgs::msg::Point>::SharedPtr init_left_sub_;
     rclcpp::Subscription<geometry_msgs::msg::Point>::SharedPtr init_right_sub_;
     Mat frame, gray, dst;
-    // Point prevpt1 = Point(296, 929);
-    // Point prevpt2 = Point(1702, 929);
+    // Point prevpt1 = Point(239, 938);
+    // Point prevpt2 = Point(1674, 943);
     Point prevpt1,prevpt2;
     Point cpt[2];
     Point fpt;
@@ -92,7 +92,7 @@ private:
         fpt.y = (cpt[0].y + cpt[1].y) / 2 + gray.rows / 3 * 2;
         cvtColor(dst, dst, COLOR_GRAY2BGR);
 
-        // circle(frame, fpt, 2, Scalar(0, 0, 255), 2);
+        circle(dst, fpt, 2, Scalar(0, 0, 255), 2);
         circle(dst, cpt[0], 2, Scalar(0, 0, 255), 2);
         circle(dst, cpt[1], 2, Scalar(255, 0, 0), 2);
 
@@ -127,7 +127,7 @@ public:
             "/gray_image_topic", 10,
             std::bind(&LaneFollowing::subs_callback, this, std::placeholders::_1));
 
-        cmd_vel_pub_ = this->create_publisher<geometry_msgs::msg::Twist>("/cmd_vel1", 10);
+        cmd_vel_pub_ = this->create_publisher<geometry_msgs::msg::Twist>("/cmd_vel", 10);
         update_timer_ = this->create_wall_timer(10ms, std::bind(&LaneFollowing::update_callback, this));
     }
 };
