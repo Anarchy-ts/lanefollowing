@@ -327,22 +327,22 @@ class BasicNavigator(Node):
         self.info('Nav2 is ready for use!')
         return
 
-    # def lifecycleShutdown(self):
-    #     self.info('Shutting down lifecycle nodes based on lifecycle_manager.')
-    #     srvs = self.get_service_names_and_types()
-    #     for srv in srvs:
-    #         if srv[1][0] == 'nav2_msgs/srv/ManageLifecycleNodes':
-    #             srv_name = srv[0]
-    #             self.info('Shutting down ' + srv_name)
-    #             mgr_client = self.create_client(ManageLifecycleNodes, srv_name)
-    #             while not mgr_client.wait_for_service(timeout_sec=1.0):
-    #                 self.info(srv_name + ' service not available, waiting...')
-    #             req = ManageLifecycleNodes.Request()
-    #             req.command = ManageLifecycleNodes.Request().SHUTDOWN
-    #             future = mgr_client.call_async(req)
-    #             rclpy.spin_until_future_complete(self, future)
-    #             future.result()
-    #     return
+    def lifecycleShutdown(self):
+        self.info('Shutting down lifecycle nodes based on lifecycle_manager.')
+        srvs = self.get_service_names_and_types()
+        for srv in srvs:
+            if srv[1][0] == 'nav2_msgs/srv/ManageLifecycleNodes':
+                srv_name = srv[0]
+                self.info('Shutting down ' + srv_name)
+                mgr_client = self.create_client(ManageLifecycleNodes, srv_name)
+                while not mgr_client.wait_for_service(timeout_sec=1.0):
+                    self.info(srv_name + ' service not available, waiting...')
+                req = ManageLifecycleNodes.Request()
+                req.command = ManageLifecycleNodes.Request().SHUTDOWN
+                future = mgr_client.call_async(req)
+                rclpy.spin_until_future_complete(self, future)
+                future.result()
+        return
 
     def _waitForNodeToActivate(self, node_name):
         # Waits for the node within the tester namespace to become active

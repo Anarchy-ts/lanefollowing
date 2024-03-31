@@ -6,7 +6,7 @@
 class ImageConverter : public rclcpp::Node
 {
 public:
-    ImageConverter() : Node("image_converter")
+    ImageConverter() : Node("detector")
     {
         // Subscribe to the RGB image topic
         subscription_ = this->create_subscription<sensor_msgs::msg::Image>(

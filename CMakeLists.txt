@@ -39,7 +39,7 @@ ament_target_dependencies(avoid rclcpp sensor_msgs geometry_msgs nav2_msgs nav2_
 
 install(
   DIRECTORY 
-    
+    src/config/
   DESTINATION share/${PROJECT_NAME}
 )
 
@@ -50,6 +50,9 @@ install(
     src/obstacles/nav2pose.py
     src/obstacles/ahead.py
     src/obstacles/switch.py
+    src/obstacles/stop.py
+    src/obstacles/initial.py
+    src/obstacles/aligner.py
     src/lanefollower/pixelcoord.py
   DESTINATION lib/${PROJECT_NAME}
 )

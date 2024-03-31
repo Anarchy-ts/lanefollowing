@@ -65,7 +65,7 @@ private:
         double x, y, z;
         std::tie(x, y, z) = closest_point_;
         // Check if the closest point is within 1 unit from the robot
-        if (y < 0.7) {
+        if (y < 1) {
             avoid_obstacle_ = true;
             obstacle_point_ = std::make_tuple(x, y, z);
         }

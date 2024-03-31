@@ -1,0 +1,17 @@
+twist_mux:
+  ros__parameters:
+    topics:
+      lanefollowing:
+        topic   : /lane/cmd_vel
+        timeout : 0.5
+        priority: 50
+      stopper:
+        topic   : /lane/stop
+        timeout : 0.5
+        priority: 10
+      obstacle:
+        topic   : /cmd_vel
+        timeout : 0.5
+        priority: 100
+
+# ros2 run twist_mux twist_mux --ros-args --params-file /home/tamoghna/ros2_ws/src/lanefollowing/src/config/twist_mux.yaml -r cmd_vel_out:=/vidhyut/cmd_vel

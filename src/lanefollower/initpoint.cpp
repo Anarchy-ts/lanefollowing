@@ -11,7 +11,7 @@ geometry_msgs::msg::Point left,right;
 class LanePointsExtractor : public rclcpp::Node
 {
 public:
-    LanePointsExtractor() : Node("initPointExtract")
+    LanePointsExtractor() : Node("initpoint")
     {
         subscription = this->create_subscription<sensor_msgs::msg::Image>(
             "/gray_image_topic", 10, std::bind(&LanePointsExtractor::imageCallback, this, std::placeholders::_1));

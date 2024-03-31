@@ -113,7 +113,7 @@ private:
 
 public:
     LaneFollowing()
-        : Node("lanefollowing"), init_flag1(false), init_flag2(false) {
+        : Node("final"), init_flag1(false), init_flag2(false) {
         
         init_left_sub_ = this->create_subscription<geometry_msgs::msg::Point>(
             "/init_left", 1,
@@ -127,7 +127,7 @@ public:
             "/gray_image_topic", 10,
             std::bind(&LaneFollowing::subs_callback, this, std::placeholders::_1));
 
-        cmd_vel_pub_ = this->create_publisher<geometry_msgs::msg::Twist>("/cmd_vel", 10);
+        cmd_vel_pub_ = this->create_publisher<geometry_msgs::msg::Twist>("/lane/cmd_vel", 10);
         update_timer_ = this->create_wall_timer(10ms, std::bind(&LaneFollowing::update_callback, this));
     }
 };
