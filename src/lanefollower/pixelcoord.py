@@ -10,7 +10,7 @@ class ImageSubscriber(Node):
         super().__init__('pixel_coord')
         self.subscription = self.create_subscription(
             Image,
-            '/zed2i/zed_node/image_raw',  
+            '/zed/zed_node/rgb/image_rect_color',  
             self.image_callback,
             10)
         self.subscription  # prevent unused variable warning
@@ -19,6 +19,7 @@ class ImageSubscriber(Node):
     def image_callback(self, msg):
         image = self.bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
         image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        # image = cv2.resize(image, (640,480))
         # print(image.shape)
         cv2.imshow('Image', image)
         cv2.setMouseCallback('Image', self.on_mouse, image)

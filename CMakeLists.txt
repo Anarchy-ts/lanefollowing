@@ -23,11 +23,11 @@ ament_python_install_package(${PROJECT_NAME})
 # target_include_directories(lanefollowing PUBLIC ${CMAKE_SOURCE_DIR}/include/${PROJECT_NAME})
 # ament_target_dependencies(lanefollowing rclcpp cv_bridge sensor_msgs geometry_msgs OpenCV)
 
-add_executable(detector src/lanefollower/detector.cpp)
-ament_target_dependencies(detector rclcpp sensor_msgs cv_bridge OpenCV)
-
 add_executable(initpoint src/lanefollower/initpoint.cpp)
 ament_target_dependencies(initpoint rclcpp sensor_msgs cv_bridge OpenCV)
+
+add_executable(midpoint src/lanefollower/midpts.cpp)
+ament_target_dependencies(midpoint rclcpp sensor_msgs cv_bridge OpenCV)
 
 add_executable(final src/lanefollower/final.cpp)
 ament_target_dependencies(final rclcpp sensor_msgs geometry_msgs cv_bridge OpenCV)
@@ -45,7 +45,6 @@ install(
 
 install(
   PROGRAMS 
-    src/obstacles/testpts.py
     src/obstacles/robot_navigator.py
     src/obstacles/nav2pose.py
     src/obstacles/ahead.py
@@ -54,12 +53,14 @@ install(
     src/obstacles/initial.py
     src/obstacles/aligner.py
     src/lanefollower/pixelcoord.py
+    src/lanefollower/detector.py
+    src/lanefollower/mid_ipm.py
+    src/lanefollower/lanegoal.py
   DESTINATION lib/${PROJECT_NAME}
 )
 
 install(TARGETS
-  # lanefollowing
-  detector
+  midpoint
   initpoint
   final
   avoid
@@ -67,12 +68,6 @@ install(TARGETS
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
-  # the following line skips the linter which checks for copyrights
-  # uncomment the line when a copyright and license is not present in all source files
-  #set(ament_cmake_copyright_FOUND TRUE)
-  # the following line skips cpplint (only works in a git repo)
-  # uncomment the line when this package is not in a git repo
-  #set(ament_cmake_cpplint_FOUND TRUE)
   ament_lint_auto_find_test_dependencies()
 endif()
 

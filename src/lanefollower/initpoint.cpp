@@ -14,7 +14,7 @@ public:
     LanePointsExtractor() : Node("initpoint")
     {
         subscription = this->create_subscription<sensor_msgs::msg::Image>(
-            "/gray_image_topic", 10, std::bind(&LanePointsExtractor::imageCallback, this, std::placeholders::_1));
+            "/igvc/lanes_binary", 10, std::bind(&LanePointsExtractor::imageCallback, this, std::placeholders::_1));
         
         l_publisher = this->create_publisher<geometry_msgs::msg::Point>("/init_left", 10);
         r_publisher = this->create_publisher<geometry_msgs::msg::Point>("/init_right", 10);
@@ -42,7 +42,7 @@ private:
 
                     // uint8_t intensity = msg->data[index];
                     intensity = cv_image.at<uchar>(y, x);
-                    if (intensity == 255) 
+                    if (intensity == 140) 
                     {
                         geometry_msgs::msg::Point pixel_point;
                         pixel_point.x = x;
@@ -62,7 +62,7 @@ private:
 
                     // uint8_t intensity = msg->data[index];
                     intensity = cv_image.at<uchar>(y, x);
-                    if (intensity == 255) 
+                    if (intensity == 140) 
                     {
                         geometry_msgs::msg::Point pixel_point;
                         pixel_point.x = x;

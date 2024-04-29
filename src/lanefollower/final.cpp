@@ -52,6 +52,7 @@ private:
         // inRange(gray, cv::Scalar(125), cv::Scalar(135), gray);
 
         dst = gray(Rect(0, gray.rows / 3 * 2, gray.cols, gray.rows / 3));
+        // dst = gray;
         // dst = cv_bridge::toCvShare(msg, "mono8")->image;
 
         Mat labels, stats, centroids;
@@ -105,8 +106,8 @@ private:
 
     void update_callback() {
         geometry_msgs::msg::Twist cmd_vel;
-        cmd_vel.linear.x = 0.7;
-        cmd_vel.angular.z = (error * 90.0 / 720) / 15;
+        cmd_vel.linear.x = 0.5;
+        cmd_vel.angular.z = (error*90.0/400)/15;
 
         cmd_vel_pub_->publish(cmd_vel);
     }
@@ -124,7 +125,7 @@ public:
             std::bind(&LaneFollowing::init_right_callback, this, std::placeholders::_1));
 
         img_sub_ = this->create_subscription<Image>(
-            "/gray_image_topic", 10,
+            "/igvc/lanes_binary", 10,
             std::bind(&LaneFollowing::subs_callback, this, std::placeholders::_1));
 
         cmd_vel_pub_ = this->create_publisher<geometry_msgs::msg::Twist>("/lane/cmd_vel", 10);
