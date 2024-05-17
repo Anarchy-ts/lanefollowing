@@ -14,7 +14,7 @@ import tf_transformations
 class LaneMidWorld(Node):
     def __init__(self):
         super().__init__('midpt_ipm')
-        self.create_subscription(CameraInfo, "/zed/zed_node/depth/camera_info", self.infocam, 10)
+        self.create_subscription(CameraInfo, "/zed/zed_node/rgb/camera_info", self.infocam, 10)
         self.create_subscription(Odometry, "/vidhyut/odom", self.odom_info, 10)
         self.midpcl = self.create_publisher(PointCloud2, '/flane/midworldcoord', 2)
         self.lanegoal = self.create_publisher(Point, "/flane/lanegoal",10)

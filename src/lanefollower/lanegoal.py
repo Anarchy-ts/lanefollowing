@@ -3,59 +3,83 @@ import rclpy
 from geometry_msgs.msg import PoseStamped
 from robot_navigator import BasicNavigator, NavigationResult
 from geometry_msgs.msg import Point
+from rclpy.node import Node
+from nav_msgs.msg import Odometry
+import time
 
-class NavigatorDemo:
+global pos, modo, modoflag
+pos = Point()
+modo = Odometry()
+modoflag = False
+
+class Subscriber(Node):
+    def __init__(self):
+        super().__init__('lf')
+        self.create_subscription(Odometry, '/vidhyut/odom', self.odom, 10)
+
+    def odom(self,msg):
+        global modo,modoflag
+        if modoflag == False:
+            modo = msg
+            modoflag = True
+            self.create_subscription(Point, '/flane/lanegoal', self.goal, 10)
+
+    def goal(self, msg):
+        global pos
+        pos = msg
+        
+        LaneFollower().run()
+
+class LaneFollower:
     def __init__(self):
         self.navigator = BasicNavigator()
-        self.odom_subscriber = self.navigator.create_subscription(Point, '/flane/lanegoal', self.odom_callback, 10)
-  
-    def odom_callback(self, msg):
-        self.x = msg.x
-        self.y = msg.y
-        self.z = msg.z
-        self.ang_x = 0.0
-        self.ang_y = 0.0
-        self.ang_z = 0.0
 
     def run(self):
+        global pos,modo,modoflag
         self.navigator.waitUntilNav2Active()
 
         # while rclpy.ok() and self.current_x is None:
         #     rclpy.spin_once(self.navigator)
 
-        goal_pose = PoseStamped()
-        goal_pose.header.frame_id = 'odom'
-        goal_pose.header.stamp = self.navigator.get_clock().now().to_msg()
+        self.goal_pose = PoseStamped()
+        self.goal_pose.header.frame_id = 'odom'
+        self.goal_pose.header.stamp = self.navigator.get_clock().now().to_msg()
   
-        goal_pose.pose.position.x = self.x 
-        goal_pose.pose.position.y = self.y
-        goal_pose.pose.orientation.x = self.ang_x
-        goal_pose.pose.orientation.y = self.ang_y
-        goal_pose.pose.orientation.z = self.ang_z
-        goal_pose.pose.orientation.w = 1.0
-
-        self.navigator.goToPose(goal_pose)
+        self.goal_pose.pose.position.x = pos.x 
+        self.goal_pose.pose.position.y = pos.y
+        self.goal_pose.pose.position.z = pos.z
+        self.goal_pose.pose.orientation.x = modo.pose.pose.orientation.x
+        self.goal_pose.pose.orientation.y = modo.pose.pose.orientation.y
+        self.goal_pose.pose.orientation.z = modo.pose.pose.orientation.z
+        self.goal_pose.pose.orientation.w = modo.pose.pose.orientation.w
+        
+        
+        self.navigator.goToPose(self.goal_pose)
 
         while rclpy.ok() and not self.navigator.isNavComplete():
             rclpy.spin_once(self.navigator)
 
         result = self.navigator.getResult()
         if result == NavigationResult.SUCCEEDED:
-            print('Goal succeeded!')
+            print('Goal succeeded!\n Taking new goal!')
+            modoflag = False
+            time.sleep(2)
         elif result == NavigationResult.CANCELED:
             print('Goal was canceled!')
         elif result == NavigationResult.FAILED:
             print('Goal failed!')
         else:
             print('Goal has an invalid return status!')
-
+        
         # self.navigator.lifecycleShutdown()
-        exit(0)
+        # exit(0)
 
-def main():
-    rclpy.init()
-    demo = NavigatorDemo()
-    demo.run()
+def main(args=None):
+    rclpy.init(args=args)
+    flane = Subscriber()
+    rclpy.spin(flane)
+    flane.destroy_node()
+    rclpy.shutdown()
 
 if __name__ == '__main__':
     main()
