@@ -12,13 +12,8 @@ class ImageConverter(Node):
         super().__init__('detector')
 
         # Subscribe to the RGB image topic
-        self.subscription = self.create_subscription(
-            Image,
-            '/zed/zed_node/rgb/image_rect_color',
-            self.process_image,
-            10)
-   
-        self.publisher_ = self.create_publisher(Image, '/igvc/lanes_binary', 10)
+        self.create_subscription(Image, '/igvc/lanes_binary', self.process_image, 10)
+        self.publisher_ = self.create_publisher(Image, '/igvc/lanes_binary2', 10)
 
     def process_image(self, msg):
         try:
@@ -27,9 +22,7 @@ class ImageConverter(Node):
             cv_image = bridge.imgmsg_to_cv2(msg, desired_encoding='passthrough')
         
             # Convert RGB image to grayscale
-            gray_image = cv2.cvtColor(cv_image, cv2.COLOR_RGB2GRAY)
-            binary_image = cv2.inRange(gray_image, 125, 140)
-            binary_image[:binary_image.shape[0]//2 , :] = 0
+            binary_image = cv2.cvtColor(cv_image, cv2.COLOR_RGB2GRAY)
 
             # Find the indices of white pixels
             white_pixel_indices = np.argwhere(binary_image == 255)
@@ -47,7 +40,7 @@ class ImageConverter(Node):
             cluster_sizes = [np.sum(labels == label) for label in np.unique(labels) if label != -1]
 
             # Keep the indices of the largest two clusters
-            largest_clusters_indices = np.argsort(cluster_sizes)[-2:]
+            largest_clusters_indices = np.argsort(cluster_sizes)[-1:]
 
             # Create a blank image to draw clusters
             clustered_image = np.zeros_like(cv_image)
@@ -68,7 +61,7 @@ class ImageConverter(Node):
             self.publisher_.publish(clustered_msg)
         except Exception as e:
             self.get_logger().error('cv_bridge exception: %s' % e)
-
+    
 def main(args=None):
     rclpy.init(args=args)
     image_converter = ImageConverter()

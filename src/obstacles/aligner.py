@@ -3,6 +3,8 @@ import rclpy
 from rclpy.node import Node
 from nav_msgs.msg import Odometry
 from geometry_msgs.msg import Twist
+import tf_transformations
+import numpy as np
 
 class OdomAligner(Node):
     def __init__(self):
@@ -24,14 +26,34 @@ class OdomAligner(Node):
 
         self.cmd_vel_pub = self.create_publisher(Twist, '/cmd_vel', 10)
 
-        self.stop_threshold = 0.1  # Threshold to consider orientations equal
-        self.angular_velocity = 0.5  # Angular velocity to adjust orientation
+        self.stop_threshold = 5  # Threshold to consider orientations equal
+        self.angular_velocity = 0.2  # Angular velocity to adjust orientation
 
     def initial_odom_callback(self, msg):
-        self.initial_orientation = msg.pose.pose.orientation.z
+        odom_ang_x = msg.pose.pose.orientation.x
+        odom_ang_y = msg.pose.pose.orientation.y
+        odom_ang_z = msg.pose.pose.orientation.z
+        odom_w = msg.pose.pose.orientation.w
+        quaternion = [odom_ang_x, odom_ang_y, odom_ang_z, odom_w]
+        # q = tf_transformations.quaternion_from_euler(r, p, y)
+        r, p, y = tf_transformations.euler_from_quaternion(quaternion)
+        self.roll = np.rad2deg(r)
+        self.pitch = np.rad2deg(p)
+        self.yaw = np.rad2deg(y)
+        self.initial_orientation = self.yaw
 
     def vidhyut_odom_callback(self, msg):
-        self.vidhyut_orientation = msg.pose.pose.orientation.z
+        odom_ang_x = msg.pose.pose.orientation.x
+        odom_ang_y = msg.pose.pose.orientation.y
+        odom_ang_z = msg.pose.pose.orientation.z
+        odom_w= msg.pose.pose.orientation.w
+        quaternion = [odom_ang_x, odom_ang_y, odom_ang_z, odom_w]
+        # q = tf_transformations.quaternion_from_euler(r, p, y)
+        r, p, y = tf_transformations.euler_from_quaternion(quaternion)
+        roll = np.rad2deg(r)
+        pitch = np.rad2deg(p)
+        yaw = np.rad2deg(y)
+        self.vidhyut_orientation = yaw
         if abs(self.initial_orientation - self.vidhyut_orientation) > self.stop_threshold:
             # print("HI")
             cmd_vel_msg = Twist()
@@ -39,6 +61,9 @@ class OdomAligner(Node):
             cmd_vel_msg.angular.z = self.angular_velocity
             self.cmd_vel_pub.publish(cmd_vel_msg)
         else :
+            cmd_vel_msg = Twist()
+            cmd_vel_msg.angular.z = 0.0
+            self.cmd_vel_pub.publish(cmd_vel_msg)
             exit(0)
        
 

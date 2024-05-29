@@ -29,6 +29,9 @@ ament_target_dependencies(initpoint rclcpp sensor_msgs cv_bridge OpenCV)
 add_executable(midpoint src/lanefollower/midpts.cpp)
 ament_target_dependencies(midpoint rclcpp sensor_msgs cv_bridge OpenCV)
 
+add_executable(alignpt src/lanefollower/test.cpp)
+ament_target_dependencies(alignpt rclcpp sensor_msgs cv_bridge OpenCV)
+
 add_executable(final src/lanefollower/final.cpp)
 ament_target_dependencies(final rclcpp sensor_msgs geometry_msgs cv_bridge OpenCV)
 
@@ -56,6 +59,9 @@ install(
     src/lanefollower/detector.py
     src/lanefollower/mid_ipm.py
     src/lanefollower/lanegoal.py
+    src/lanefollower/lane_align.py
+    src/lanefollower/follow.py
+    src/lanefollower/vect.py
   DESTINATION lib/${PROJECT_NAME}
 )
 
@@ -64,6 +70,7 @@ install(TARGETS
   initpoint
   final
   avoid
+  alignpt
   DESTINATION lib/${PROJECT_NAME})
 
 if(BUILD_TESTING)

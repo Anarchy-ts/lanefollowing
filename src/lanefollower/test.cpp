@@ -14,15 +14,11 @@ public:
     LaneMidPointsExtractor() : Node("midpoint")
     {
         subscription = this->create_subscription<sensor_msgs::msg::Image>(
-            "/igvc/lanes_binary", 10, std::bind(&LaneMidPointsExtractor::imageCallback, this, std::placeholders::_1));
+            "/igvc/lanes_binary2", 10, std::bind(&LaneMidPointsExtractor::imageCallback, this, std::placeholders::_1));
         
-        l_publisher = this->create_publisher<geometry_msgs::msg::Point>("/flane/leftpts/start", 10);
-        r_publisher = this->create_publisher<geometry_msgs::msg::Point>("/flane/rightpts/start", 10);
-        m_publisher = this->create_publisher<geometry_msgs::msg::Point>("/flane/midpts/start", 10);
+        m_publisher = this->create_publisher<geometry_msgs::msg::Point>("/flane/align/start", 10);
 
-        l2_publisher = this->create_publisher<geometry_msgs::msg::Point>("/flane/leftpts/end", 10);
-        r2_publisher = this->create_publisher<geometry_msgs::msg::Point>("/flane/rightpts/end", 10);
-        m2_publisher = this->create_publisher<geometry_msgs::msg::Point>("/flane/midpts/end", 10);
+        m2_publisher = this->create_publisher<geometry_msgs::msg::Point>("/flane/align/end", 10);
     }
 
 private:
@@ -65,14 +61,12 @@ private:
             if (flagl && flagr)
             {   
                 start_diff = abs(left.x-right.x);
-                if (start_diff>30)
+                if (start_diff>10)
                 {
                     mid.x = round((left.x+right.x)/2);
                     mid.y = round((left.y+right.y)/2);
                     mid.z = 0;
                     RCLCPP_INFO_ONCE(this->get_logger(), "LEFT1,RIGHT1,MID1 publishing");
-                    l_publisher->publish(left);
-                    r_publisher->publish(right);
                     m_publisher->publish(mid);
                     break;
                 }
@@ -118,59 +112,14 @@ private:
             {   
                 end_diff = abs(left.x-right.x);
                 
-                if (end_diff>30)
+                if (end_diff>10)
                 {
                     mid.x = round((left.x+right.x)/2);
                     mid.y = round((left.y+right.y)/2);
                     mid.z = 0;
                     RCLCPP_INFO_ONCE(this->get_logger(), "LEFT2,RIGHT2,MID2 publishing");
-                    l2_publisher->publish(left);
-                    r2_publisher->publish(right);
                     m2_publisher->publish(mid);
-                    break;
-                    // std::cout<<"start_diff :"<<start_diff;
-                    // std::cout<<"\nend_diff :"<<end_diff;
-                    // if (start_diff<100)
-                    // {
-                    //     if (start_midx<=round(width/2))
-                    //     {
-                    //         mid.x = left.x;
-                    //         mid.y = round((left.y+right.y)/2);
-                    //         mid.z = 0;
-                    //         RCLCPP_INFO_ONCE(this->get_logger(), "LEFT2,RIGHT2,MID2 publishing");
-                    //         l2_publisher->publish(left);
-                    //         r2_publisher->publish(right);
-                    //         m2_publisher->publish(mid);
-                    //         break;
-
-                    //     }
-                    //     else
-                    //     {
-                    //         mid.x = right.x;
-                    //         mid.y = round((left.y+right.y)/2);
-                    //         mid.z = 0;
-                    //         RCLCPP_INFO_ONCE(this->get_logger(), "LEFT2,RIGHT2,MID2 publishing");
-                    //         l2_publisher->publish(left);
-                    //         r2_publisher->publish(right);
-                    //         m2_publisher->publish(mid);
-                    //         break;
-
-                    //     }
-                    // }
-                    // else
-                    // {
-                    //     // std::cout<<"start_diff :"<<start_diff;
-                    //     // std::cout<<"\nend_diff :"<<end_diff;
-                    //     mid.x = round((left.x+right.x)/2);
-                    //     mid.y = round((left.y+right.y)/2);
-                    //     mid.z = 0;
-                    //     RCLCPP_INFO_ONCE(this->get_logger(), "LEFT2,RIGHT2,MID2 publishing");
-                    //     l2_publisher->publish(left);
-                    //     r2_publisher->publish(right);
-                    //     m2_publisher->publish(mid);
-                    //     break;
-                    // }
-                    
+                    break;                    
                 }
                 else
                 {

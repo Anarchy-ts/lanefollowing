@@ -22,7 +22,7 @@ class Subscriber(Node):
         if modoflag == False:
             modo = msg
             modoflag = True
-            self.create_subscription(Point, '/flane/lanegoal', self.goal, 10)
+            self.create_subscription(Point, '/flane/lanegoal/start', self.goal, 10)
 
     def goal(self, msg):
         global pos
@@ -61,7 +61,7 @@ class LaneFollower:
 
         result = self.navigator.getResult()
         if result == NavigationResult.SUCCEEDED:
-            print('Goal succeeded!\n Taking new goal!')
+            print('Goal succeeded!\n Aligner will start')
             modoflag = False
             time.sleep(2)
         elif result == NavigationResult.CANCELED:
@@ -72,7 +72,7 @@ class LaneFollower:
             print('Goal has an invalid return status!')
         
         # self.navigator.lifecycleShutdown()
-        # exit(0)
+        exit(0)
 
 def main(args=None):
     rclpy.init(args=args)
