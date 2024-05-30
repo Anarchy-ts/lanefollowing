@@ -62,6 +62,7 @@ install(
     src/lanefollower/lane_align.py
     src/lanefollower/follow.py
     src/lanefollower/vect.py
+    src/lanefollower/go.py
   DESTINATION lib/${PROJECT_NAME}
 )
 

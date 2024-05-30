@@ -19,6 +19,7 @@ class ImageConverter(Node):
             10)
    
         self.publisher_ = self.create_publisher(Image, '/igvc/lanes_binary', 10)
+        self.publisher2_ = self.create_publisher(Image, '/igvc/lanes_binary2', 10)
 
     def process_image(self, msg):
         try:
@@ -29,10 +30,12 @@ class ImageConverter(Node):
             # Convert RGB image to grayscale
             gray_image = cv2.cvtColor(cv_image, cv2.COLOR_RGB2GRAY)
             binary_image = cv2.inRange(gray_image, 125, 140)
+            binary_image2 = binary_image.copy()
             binary_image[:binary_image.shape[0]//2 , :] = 0
-
+            binary_image2[:binary_image2.shape[0]//2 + 100, :] = 0
             # Find the indices of white pixels
             white_pixel_indices = np.argwhere(binary_image == 255)
+            white_pixel_indices2 = np.argwhere(binary_image2 == 255)
 
             # Run DBSCAN on white pixel indices
             db = DBSCAN(eps=1, min_samples=5).fit(white_pixel_indices)
@@ -43,14 +46,29 @@ class ImageConverter(Node):
             print('Estimated no. of clusters: %d' % no_clusters)
             print('Estimated no. of noise points: %d' % no_noise)
 
+            db2 = DBSCAN(eps=1, min_samples=5).fit(white_pixel_indices2)
+            labels2 = db2.labels_
+
             # Determine the size of each cluster
             cluster_sizes = [np.sum(labels == label) for label in np.unique(labels) if label != -1]
+            cluster_sizes2 = [np.sum(labels2 == label) for label in np.unique(labels2) if label != -1]
 
             # Keep the indices of the largest two clusters
             largest_clusters_indices = np.argsort(cluster_sizes)[-2:]
+            largest_clusters_indices2 = np.argsort(cluster_sizes2)[-1:]
 
             # Create a blank image to draw clusters
             clustered_image = np.zeros_like(cv_image)
+            clustered_image2 = np.zeros_like(cv_image)
+
+            for label in np.unique(labels):
+                
+                if label == -1 or label not in largest_clusters_indices2:
+                    continue
+                
+                cluster_indices = white_pixel_indices[labels == label]
+                for point in cluster_indices:
+                    clustered_image2[point[0], point[1]] = 255
 
             for label in np.unique(labels):
                 
@@ -62,10 +80,11 @@ class ImageConverter(Node):
                     clustered_image[point[0], point[1]] = 255
 
             clustered_msg = bridge.cv2_to_imgmsg(clustered_image, encoding='rgb8')
-
+            clustered_msg2 = bridge.cv2_to_imgmsg(clustered_image2, encoding='rgb8')
 
             # Publish the clustered image
             self.publisher_.publish(clustered_msg)
+            self.publisher2_.publish(clustered_msg2)
         except Exception as e:
             self.get_logger().error('cv_bridge exception: %s' % e)
 
